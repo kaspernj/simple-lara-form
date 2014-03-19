@@ -2,27 +2,17 @@
 
 namespace simple_laraform\inputs;
 
-class text extends BaseInput{
+class Text extends BaseInput{
   function getElement(){
-    $container = $this->getDom()->createElement("div");
-    $container->setAttribute("class", "simple_laraform_element_container");
-    
-    $label = $this->getDom()->createElement("label");
-    $label->setAttribute("for", $this->getID());
-    
-    $label_container = $this->getDom()->createElement("div");
-    $label_container->setAttribute("class", "simple_laraform_label_container");
-    $label_container->appendChild($label);
-    
-    $container->appendChild($label_container);
+    $data = $this->containerWithLabel();
     
     $input = $this->getDom()->createElement("input");
     $input->setAttribute("type", "text");
     $input->setAttribute("name", $this->getName());
     $input->setAttribute("value", $this->getValue());
     
-    $container->appendChild($input);
+    $data["input_container"]->appendChild($input);
     
-    return $container;
+    return $data["container"];
   }
 }

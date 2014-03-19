@@ -31,9 +31,15 @@ class SimpleLaraform{
       "url" => $url
     ));
     
+    ob_start();
     $func($form);
+    $html = ob_get_contents();
+    ob_end_clean();
     
-    return $form->html();
+    $html_form = $form->getForm()["dom"]->saveHtml();
+    $total_html = str_replace("</form>", ($html . "</form>"), $html_form);
+    
+    return $total_html;
   }
   
   private static function getUrlForModel($model){
@@ -45,14 +51,19 @@ class SimpleLaraform{
   function __construct($args){
     $this->args = $args;
     if (!array_key_exists("url", $args)) throw new exception("No URL was given: " . print_r($args, true));
+  }
+  
+  function getForm(){
+    $dom = new DOMDocument();
+    $form = $dom->createElement("form");
+    $form->setAttribute("method", $this->args["method"]);
+    $form->setAttribute("action", $this->args["url"]);
+    $dom->appendChild($form);
     
-    $this->dom = new DOMDocument();
-    
-    $this->form = $this->dom->createElement("form");
-    $this->form->setAttribute("method", $this->args["method"]);
-    $this->form->setAttribute("action", $args["url"]);
-    
-    $this->dom->appendChild($this->form);
+    return array(
+      "dom" => $dom,
+      "form" => $form
+    );
   }
   
   function input($name, $args = array()){
@@ -82,32 +93,38 @@ class SimpleLaraform{
       $value = null;
     }
     
-    require_once dirname(__FILE__) . "/inputs/" . $as . ".php";
+    $input_path = dirname(__FILE__) . "/inputs/" . $as . ".php";
+    if (file_exists($input_path)) require_once $input_path;
+    
+    $dom = new DOMDocument();
     
     $class_name = "simple_laraform\\inputs\\" . $as;
     $input_object = new $class_name(array(
       "args" => $args,
-      "dom" => $this->dom,
+      "dom" => $dom,
       "name" => $input_name,
       "id" => $id,
       "value" => $value
     ));
-    $this->form->appendChild($input_object->getElement());
+    $element = $input_object->getElement();
+    if (!is_a($element, "DOMNode")) throw new exception("Returned element of '" . $as . "' was not a DOMNode.");
+    
+    $dom->appendChild($element);
+    return $dom->saveHtml();
   }
   
   function submit($text = "Save"){
-    $container = $this->dom->createElement("div");
+    $dom = new DOMDocument();
+    
+    $container = $dom->createElement("div");
     $container->setAttribute("class", "simple_laraform_submit");
+    $dom->appendChild($container);
     
-    $this->form->appendChild($container);
-    
-    $input = $this->dom->createElement("input");
+    $input = $dom->createElement("input");
     $input->setAttribute("type", "submit");
     $input->setAttribute("value", $text);
     $container->appendChild($input);
-  }
-  
-  function html(){
-    return $this->dom->saveHtml();
+    
+    echo $dom->saveHtml();
   }
 }
