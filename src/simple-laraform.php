@@ -125,6 +125,6 @@ class SimpleLaraform{
     $input->setAttribute("value", $text);
     $container->appendChild($input);
     
-    echo $dom->saveHtml();
+    return $dom->saveHtml();
   }
 }
