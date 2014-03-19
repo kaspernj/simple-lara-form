@@ -1,9 +1,23 @@
 # SimleLaraForm
 
+For a model in Laravel.
 ```php
 <?=SimpleLaraForm($model, null, function($f){?>
-  <?=$f.input("name")?>
-  <?=$f.input("description", array("as" => "textarea"))?>
-  <?=$f.submit()?>
+  <?=$f->input("name")?>
+  <?=$f->input("description", array("as" => "textarea"))?>
+  <?=$f->submit()?>
 <?})?>
+```
+
+For a form without a model.
+```php
+<?=SimpleLaraForm("test", array("url" => "some_url"), function($f){?>
+  <?=$f->input("name")?>
+  <?=$f->input("description", array("as" => "textarea"))?>
+<?})?>
+```
+
+How to generate a list:
+```php
+<?=$f->input("mylist", array("as" => "select", "value" => 2, "collection" => array(1 => "Number 1", 2 => "Number 2", 3 => "Number 3")))?>
 ```
