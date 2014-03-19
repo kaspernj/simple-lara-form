@@ -1,13 +1,13 @@
 <?php
 
-require_once dirname(__FILE__) . "/../test_helper.php";
+require_once dirname(__FILE__) . "/TestHelper.php";
 
 class TextareaTest extends TestCase{
   function testBasicHTML(){
     $html = SimpleLaraform::form_for("test", array("url" => "test"), function($f){
       echo "Test content.\n";
       echo $f->input("name");
-      echo $f->input("description", array("as" => "textarea", "value" => "TestValue"));
+      echo $f->input("description", array("as" => "Textarea", "value" => "TestValue"));
       echo $f->submit();
     });
     

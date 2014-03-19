@@ -1,10 +1,13 @@
 <?php
 
-require dirname(__FILE__) . "/inputs/base_input.php";
+require dirname(__FILE__) . "/Inputs/BaseInput.php";
 
-use simple_laraform\inputs;
+use SimpleLaraForm\Inputs;
 
-class SimpleLaraform{
+class SimpleLaraForm{
+  private $args;
+  private $html;
+  
   static function form_for($element, $args, $func){
     if (array_key_exists("url", $args)){
       $url = $args["url"];
@@ -32,9 +35,14 @@ class SimpleLaraform{
     ));
     
     ob_start();
-    $func($form);
-    $html = ob_get_contents();
-    ob_end_clean();
+    
+    try{
+      $func($form);
+    }finally{
+      $html = ob_get_contents();
+      ob_end_clean();
+      $form->setHTML($html);
+    }
     
     $html_form = $form->getForm()["dom"]->saveHtml();
     $total_html = str_replace("</form>", ($html . "</form>"), $html_form);
@@ -51,6 +59,14 @@ class SimpleLaraform{
   function __construct($args){
     $this->args = $args;
     if (!array_key_exists("url", $args)) throw new exception("No URL was given: " . print_r($args, true));
+  }
+  
+  function setHTML($html){
+    $this->html = $html;
+  }
+  
+  function getHTML(){
+    return $this->html;
   }
   
   function getForm(){
@@ -70,7 +86,7 @@ class SimpleLaraform{
     if (array_key_exists("as", $args)){
       $as = $args["as"];
     }else{
-      $as = "text";
+      $as = "Text";
     }
     
     if (array_key_exists("name", $args)){
@@ -93,12 +109,15 @@ class SimpleLaraform{
       $value = null;
     }
     
-    $input_path = dirname(__FILE__) . "/inputs/" . $as . ".php";
+    $input_path = dirname(__FILE__) . "/Inputs/" . $as . ".php";
     if (file_exists($input_path)) require_once $input_path;
     
     $dom = new DOMDocument();
     
-    $class_name = "simple_laraform\\inputs\\" . $as;
+    $class_name = "SimpleLaraForm\\Inputs\\" . $as;
+    
+    if (!class_exists($class_name)) throw new exception("No such input-class: " . $class_name);
+    
     $input_object = new $class_name(array(
       "args" => $args,
       "dom" => $dom,

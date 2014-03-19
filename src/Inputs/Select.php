@@ -1,8 +1,8 @@
 <?php
 
-namespace simple_laraform\inputs;
+namespace SimpleLaraForm\Inputs;
 
-class select extends BaseInput{
+class Select extends BaseInput{
   function getElement(){
     $data = $this->containerWithLabel();
     $select = $this->getDom()->createElement("select");

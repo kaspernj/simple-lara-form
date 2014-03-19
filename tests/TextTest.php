@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__FILE__) . "/../test_helper.php";
+require_once dirname(__FILE__) . "/TestHelper.php";
 
 class TextTest extends TestCase{
   function testDefaultInput(){

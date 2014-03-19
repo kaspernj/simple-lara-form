@@ -1,6 +1,6 @@
 <?php
 
-namespace simple_laraform\inputs;
+namespace SimpleLaraForm\Inputs;
 
 class textarea extends BaseInput{
   function getElement(){
